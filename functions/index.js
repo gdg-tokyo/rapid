@@ -5,7 +5,9 @@ const https = require('https');
 const app = express();
 
 app.get('/speaker/:id', (req, res) => {
-    const speakerID = req.params.id;
+    //FIXME これが不要になるようにFirestore側のデータをマイグレーションする
+    const base = req.params.id;
+    const speakerID = base.replace(/-/g, '.');
     const url = 'https://firestore.googleapis.com/v1/projects/gdg-tokyo-website/databases/(default)/documents/speakers/' + speakerID;
     
     https.get(url, function (response) {
@@ -15,8 +17,9 @@ app.get('/speaker/:id', (req, res) => {
         }).on('end', function() {
             const events = Buffer.concat(data);
             const r = JSON.parse(events);
+            console.log(r);
             const speakerInfo = {
-                id: speakerID,
+                id: r.fields.id.stringValue,
                 name: r.fields.name.stringValue,
                 position: r.fields.position.stringValue,
                 englishName: r.fields.position.stringValue,
