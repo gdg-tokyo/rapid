@@ -26,6 +26,8 @@ app.get('/speaker/:id', (req, res) => {
                 englishName: r.fields.position.stringValue,
                 twitter: r.fields.twitter.stringValue,
                 profileImage: r.fields.profileImage.stringValue,
+                sessionTitle: r.fields.sessionTitle.stringValue,
+                sessionDetail: r.fields.sessionDetail.stringValue,
                 profile: r.fields.profile.stringValue
             }
             res.json(speakerInfo);
