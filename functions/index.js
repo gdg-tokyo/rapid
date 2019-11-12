@@ -1,9 +1,10 @@
 const functions = require('firebase-functions');
 const express = require('express');
 const https = require('https');
-
+const cors = require('cors');
 const app = express();
 
+app.use(cors({ origin: '*' }))
 app.get('/speaker/:id', (req, res) => {
     //FIXME これが不要になるようにFirestore側のデータをマイグレーションする
     const base = req.params.id;
