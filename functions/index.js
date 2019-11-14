@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({ origin: '*' }))
-app.get('/speaker/:id', (req, res) => {
+app.get('/api/speaker/:id', (req, res) => {
     //FIXME これが不要になるようにFirestore側のデータをマイグレーションする
     const base = req.params.id;
     const speakerID = base.replace(/-/g, '.');
