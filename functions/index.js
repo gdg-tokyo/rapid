@@ -1,38 +1,35 @@
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 const express = require('express');
-const https = require('https');
 const cors = require('cors');
 const app = express();
 
+admin.initializeApp(functions.config().firebase);
+
 app.use(cors({ origin: '*' }))
 app.get('/api/speaker/:id', (req, res) => {
-    //FIXME これが不要になるようにFirestore側のデータをマイグレーションする
-    const base = req.params.id;
-    const speakerID = base.replace(/-/g, '.');
-    const url = 'https://firestore.googleapis.com/v1/projects/gdg-tokyo-website/databases/(default)/documents/speakers/' + speakerID;
-    
-    https.get(url, function (response) {
-        var data = [];
-        response.on('data', function(chunk) {
-            data.push(chunk);
-        }).on('end', function() {
-            const events = Buffer.concat(data);
-            const r = JSON.parse(events);
-            console.log(r);
+    const speakerID = req.params.id;
+    const db = admin.firestore();
+
+    const responseData = await db.collection('speakers').doc(speakerID).get()
+        .then(doc => {
+            const data = doc.data();
             const speakerInfo = {
-                id: r.fields.id.stringValue,
-                name: r.fields.name.stringValue,
-                position: r.fields.position.stringValue,
-                englishName: r.fields.position.stringValue,
-                twitter: r.fields.twitter.stringValue,
-                profileImage: r.fields.profileImage.stringValue,
-                sessionTitle: r.fields.sessionTitle.stringValue,
-                sessionDetail: r.fields.sessionDetail.stringValue,
-                profile: r.fields.profile.stringValue
+                id: doc.id,
+                name: data.name,
+                position: data.position,
+                englishName: data.position,
+                twitter: data.twitter,
+                profileImage: data.profileImage,
+                sessionTitle: data.sessionTitle,
+                sessionDetail: data.sessionDetail,
+                profile: data.profile
             }
-            res.json(speakerInfo);
+
+            return speakerInfo;
         });
-    });
+
+    res.json(responseData);
 });
 
 const api = functions.https.onRequest(app);
