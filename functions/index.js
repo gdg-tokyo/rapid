@@ -7,7 +7,7 @@ const app = express();
 admin.initializeApp(functions.config().firebase);
 
 app.use(cors({ origin: '*' }))
-app.get('/api/speaker/:id', (req, res) => {
+app.get('/api/speaker/:id', async(req, res) => {
     const speakerID = req.params.id;
     const db = admin.firestore();
 
